@@ -2,6 +2,16 @@ from django.db import models
 from django.contrib.auth.models import User
 import uuid
 
+
+
+
+class Payment(model.Model):
+    STATUS_CHOICES=(
+        ('PENDING', 'Pending'),
+        ('COMPLETED', 'Completed'),
+        ('FAILED', 'Failed'),
+    )
+
 class Listing(models.Model):
     PROPERTY_TYPES = [
         ('apartment', 'Apartment'),
