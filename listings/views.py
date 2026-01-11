@@ -21,46 +21,46 @@ class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
-@crsf_exempt
+@csrf_exempt
 def initiate_payment(request):
-    if request.method !="Post":
+    if request.method != "POST":
         return JsonResponse({"error": "Invalid method"}, status=405)
-    
-    booking_reference = request.Post.get("booking_reference")
-    amount = request.Post.get("amount")
-    email=request.Post.get("email")
 
-    tx_ref=str(uuid.uuid4())
+    booking_reference = request.POST.get("booking_reference")
+    amount = request.POST.get("amount")
+    email = request.POST.get("email")
 
-    payload={
-        "amount":amount,
+    tx_ref = str(uuid.uuid4())
+
+    payload = {
+        "amount": amount,
         "currency": "ETB",
         "email": email,
-        "tx_ref":tx_ref,
-        "return_url": "http://localhost:8000/payment-sucess"
-
+        "tx_ref": tx_ref,
+        "return_url": "http://localhost:8000/payment-success"
     }
 
-    headers={
-        "Authorization": f"Bearer {settingd.CHAPA_SECRET_KEY}",
+    headers = {
+        "Authorization": f"Bearer {settings.CHAPA_SECRET_KEY}",
         "Content-Type": "application/json"
     }
 
-    response = request.post(
-        f"{settings.CHAPA_BASE_URL}/transactiom/initialize",
+    response = requests.post(
+        f"{settings.CHAPA_BASE_URL}/transaction/initialize",
         json=payload,
         headers=headers
     )
 
-    data=response.json()
+    data = response.json()
 
-    if response.status_code ==200:
+    if response.status_code == 200:
         Payment.objects.create(
             booking_reference=booking_reference,
             amount=amount,
             transaction_id=tx_ref,
             status="PENDING"
         )
+
         return JsonResponse({"payment_url": data["data"]["checkout_url"]})
-    
-    return JsomResponse(data, status=400)
+
+    return JsonResponse(data, status=400)
