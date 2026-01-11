@@ -7,6 +7,14 @@ from pathlib import Path
 import environ
 import os
 
+
+
+import os
+
+CHAPA_SECRET_KEY = os.getenv("CHAPA_SECRET_KEY")
+CHAPA_BASE_URL = os.getenv("CHAPA_BASE_URL")
+
+
 # --------------------------------------------------
 # BASE DIR
 # --------------------------------------------------
